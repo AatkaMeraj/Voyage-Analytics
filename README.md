@@ -2,17 +2,17 @@
 
 # How to run
 
-'''terminal
+```terminal
 conda create -n chest python=3.8 -y
-'''
+```
 
-'''terminal
+```terminal
 conda activate chest
-'''
+```
 
-'''terminal
+```terminal
 pip install -r requirements.txt
-'''
+```
 
 
  
