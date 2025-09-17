@@ -2,17 +2,17 @@
 
 #***REMOVED***How***REMOVED***to***REMOVED***run
 
-'''terminal
+```terminal
 conda***REMOVED***create***REMOVED***-n***REMOVED***chest***REMOVED***python=3.8***REMOVED***-y
-'''
+```
 
-'''terminal
+```terminal
 conda***REMOVED***activate***REMOVED***chest
-'''
+```
 
-'''terminal
+```terminal
 pip***REMOVED***install***REMOVED***-r***REMOVED***requirements.txt
-'''
+```
 
 
 ***REMOVED***

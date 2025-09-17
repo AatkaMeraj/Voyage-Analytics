@@ -23,7 +23,6 @@ list_of_files=***REMOVED***[
 ***REMOVED******REMOVED******REMOVED******REMOVED***"setup.py",
 ***REMOVED******REMOVED******REMOVED******REMOVED***"research/trials.ipynb",
 ***REMOVED******REMOVED******REMOVED******REMOVED***"README.md",
-***REMOVED******REMOVED******REMOVED******REMOVED***"requirements.txt",
 ***REMOVED******REMOVED******REMOVED******REMOVED***"templates/index.html"
 ]
 
