@@ -32,8 +32,8 @@ if***REMOVED***__name__==***REMOVED***"__main__":
 ***REMOVED******REMOVED******REMOVED******REMOVED***np.random.seed(42)
 
 
-***REMOVED******REMOVED******REMOVED******REMOVED***data***REMOVED***=***REMOVED***pd.read_csv("data/flights.csv")
-
+***REMOVED******REMOVED******REMOVED******REMOVED***data***REMOVED***=***REMOVED***pd.read_csv("../data/flights.csv")
+***REMOVED******REMOVED******REMOVED***
 
 ***REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Feature***REMOVED***engineering***REMOVED***(same***REMOVED***as***REMOVED***training)
 ***REMOVED******REMOVED******REMOVED******REMOVED***data['date']***REMOVED***=***REMOVED***pd.to_datetime(data['date'])
@@ -54,7 +54,7 @@ if***REMOVED***__name__==***REMOVED***"__main__":
 
 ***REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Load***REMOVED***trained***REMOVED***pipeline
 ***REMOVED******REMOVED******REMOVED******REMOVED***
-***REMOVED******REMOVED******REMOVED******REMOVED***model***REMOVED***=***REMOVED***joblib.load("flight_price_pipeline.pkl")
+***REMOVED******REMOVED******REMOVED******REMOVED***model***REMOVED***=***REMOVED***joblib.load("../models/flight_price_rf_model.pkl")
 
 ***REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Run***REMOVED***predictions***REMOVED***on***REMOVED***test***REMOVED***data
 ***REMOVED******REMOVED******REMOVED***
