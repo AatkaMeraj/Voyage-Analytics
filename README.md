@@ -3,7 +3,7 @@
 #***REMOVED***How***REMOVED***to***REMOVED***run
 
 ```terminal
-conda***REMOVED***create***REMOVED***-n***REMOVED***chest***REMOVED***python=3.8***REMOVED***-y
+conda***REMOVED***create***REMOVED***-n***REMOVED***chest***REMOVED***python=3.9***REMOVED***-y
 ```
 
 ```terminal
