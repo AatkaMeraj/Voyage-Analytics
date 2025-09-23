@@ -1,142 +1,128 @@
-from***REMOVED***flask***REMOVED***import***REMOVED***Flask,***REMOVED***request,***REMOVED***jsonify,***REMOVED***render_template
-import***REMOVED***pandas***REMOVED***as***REMOVED***pd
-import***REMOVED***joblib
-import***REMOVED***os
-from***REMOVED***flask_cors***REMOVED***import***REMOVED***CORS,***REMOVED***cross_origin
-from***REMOVED***datetime***REMOVED***import***REMOVED***datetime
+from flask import Flask, request, jsonify, render_template
+import pandas as pd
+import joblib
+import os
+from flask_cors import CORS, cross_origin
+from datetime import datetime
 
-app***REMOVED***=***REMOVED***Flask(__name__)
+app = Flask(__name__)
 CORS(app)
 
-#***REMOVED***get***REMOVED***model***REMOVED***path***REMOVED***
-MODEL_PATH***REMOVED***=***REMOVED***"models/RandomForest_flight_model.pkl"
+# Get model path
+MODEL_PATH = "models/RandomForest_flight_model.pkl"
 
-#***REMOVED***Load***REMOVED***model
-model***REMOVED***=***REMOVED***joblib.load(MODEL_PATH)
+# Load model
+model = joblib.load(MODEL_PATH)
 
-REQUIRED_FIELDS***REMOVED***=***REMOVED***["from",***REMOVED***"to",***REMOVED***"flightType",***REMOVED***"agency",***REMOVED***"time",***REMOVED***"distance",***REMOVED***"year",***REMOVED***"month",***REMOVED***"day",***REMOVED***"day_of_week"]
+REQUIRED_FIELDS = ["from", "to", "flightType", "agency", "time", "distance", "year", "month", "day", "day_of_week"]
 
-def***REMOVED***parse_and_engineer(payload:***REMOVED***dict)***REMOVED***->***REMOVED***pd.DataFrame:
+def parse_and_engineer(payload: dict) -> pd.DataFrame:
+    # Basic validation
+    missing = [f for f in REQUIRED_FIELDS if f not in payload]
+    if missing:
+        raise ValueError(f"Missing fields: {missing}")
 
-***REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Basic***REMOVED***validation
-***REMOVED******REMOVED******REMOVED******REMOVED***missing***REMOVED***=***REMOVED***[f***REMOVED***for***REMOVED***f***REMOVED***in***REMOVED***REQUIRED_FIELDS***REMOVED***if***REMOVED***f***REMOVED***not***REMOVED***in***REMOVED***payload]
-***REMOVED******REMOVED******REMOVED******REMOVED***if***REMOVED***missing:
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***raise***REMOVED***ValueError(f"Missing***REMOVED***fields:***REMOVED***{missing}")
+    # Parse/convert
+    def parse_numeric(value):
+        if isinstance(value, (int, float)):
+            return float(value)
+        value = str(value).strip()
+        if ":" in value:  # handle HH:MM
+            h, m = map(int, value.split(":"))
+            return h + m / 60.0
+        return float(value)
 
-***REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Parse/convert
-***REMOVED******REMOVED******REMOVED******REMOVED***def***REMOVED***parse_numeric(value):
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***if***REMOVED***isinstance(value,***REMOVED***(int,***REMOVED***float)):
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***return***REMOVED***float(value)
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***value***REMOVED***=***REMOVED***str(value).strip()
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***if***REMOVED***":"***REMOVED***in***REMOVED***value:***REMOVED******REMOVED***#***REMOVED***handle***REMOVED***HH:MM
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***h,***REMOVED***m***REMOVED***=***REMOVED***map(int,***REMOVED***value.split(":"))
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***return***REMOVED***h***REMOVED***+***REMOVED***m***REMOVED***/***REMOVED***60.0
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***return***REMOVED***float(value)
+    try:
+        time_val = parse_numeric(payload["time"])
+        dist_val = parse_numeric(payload["distance"])
+    except Exception:
+        raise ValueError("`time` and `distance` must be int, float, numeric string, or HH:MM format.")
 
-***REMOVED******REMOVED******REMOVED******REMOVED***try:
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***time_val***REMOVED***=***REMOVED***parse_numeric(payload["time"])
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***dist_val***REMOVED***=***REMOVED***parse_numeric(payload["distance"])
-***REMOVED******REMOVED******REMOVED******REMOVED***except***REMOVED***Exception:
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***raise***REMOVED***ValueError("`time`***REMOVED***and***REMOVED***`distance`***REMOVED***must***REMOVED***be***REMOVED***int,***REMOVED***float,***REMOVED***numeric***REMOVED***string,***REMOVED***or***REMOVED***HH:MM***REMOVED***format.")
+    row = {
+        "from": payload["from"],
+        "to": payload["to"],
+        "flightType": payload["flightType"],
+        "agency": payload["agency"],
+        "time": time_val,
+        "distance": dist_val,
+        "year": int(payload["year"]),
+        "month": int(payload["month"]),
+        "day": int(payload["day"]),
+        "day_of_week": int(payload["day_of_week"])
+    }
+    return pd.DataFrame([row])
 
+# Routes
 
-***REMOVED******REMOVED******REMOVED******REMOVED***row***REMOVED***=***REMOVED***{
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"from":***REMOVED***payload["from"],
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"to":***REMOVED***payload["to"],
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"flightType":***REMOVED***payload["flightType"],
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"agency":***REMOVED***payload["agency"],
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"time":***REMOVED***time_val,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"distance":***REMOVED***dist_val,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"year":***REMOVED***int(payload["year"]),
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"month":***REMOVED***int(payload["month"]),
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"day":***REMOVED***int(payload["day"]),
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"day_of_week":***REMOVED***int(payload["day_of_week"]),
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
-***REMOVED******REMOVED******REMOVED******REMOVED***}
-***REMOVED******REMOVED******REMOVED******REMOVED***return***REMOVED***pd.DataFrame([row])
+@app.route("/", methods=["GET"])
+def home():
+    return render_template("index.html")
 
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "ok", "model_loaded": MODEL_PATH})
 
-#***REMOVED***routes***REMOVED***
+@app.route("/predict", methods=["GET", "POST"])
+def predict():
+    try:
+        if request.method == "POST":
+            # Expect JSON body
+            payload = request.get_json(force=True)
+        else:
+            # Expect query parameters
+            from_ = request.args.get("from")
+            to = request.args.get("to")
+            distance = request.args.get("distance")
+            flightType = request.args.get("flightType")
+            agency = request.args.get("agency")
+            time = request.args.get("time")
+            year = request.args.get("year")
+            month = request.args.get("month")
+            day = request.args.get("day")
+            day_of_week = request.args.get("day_of_week")
 
+            if not all([from_, to, distance, flightType, agency, time, year, month, day, day_of_week]):
+                return jsonify({"error": "Missing one or more required query parameters."}), 400
 
-@app.route("/",***REMOVED***methods=["GET"])
-def***REMOVED***home():
-***REMOVED******REMOVED******REMOVED******REMOVED***return***REMOVED***render_template("index.html")
+            payload = {
+                "from": from_,
+                "to": to,
+                "flightType": flightType,
+                "agency": agency,
+                "time": time,
+                "distance": distance,
+                "year": year,
+                "month": month,
+                "day": day,
+                "day_of_week": day_of_week
+            }
 
+        # Process input
+        X = parse_and_engineer(payload)
+        feature_order = REQUIRED_FIELDS
+        X = X[feature_order]
 
-@app.route("/health",***REMOVED***methods=["GET"])
-def***REMOVED***health():
-***REMOVED******REMOVED******REMOVED******REMOVED***return***REMOVED***jsonify({"status":***REMOVED***"ok",***REMOVED***"model_loaded":***REMOVED***MODEL_PATH})
+        pred = float(model.predict(X)[0])
+        return jsonify({"predicted_price": round(pred, 2)})
 
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
+@app.route("/predict-batch", methods=["POST"])
+def predict_batch():
+    try:
+        data = request.get_json(force=True)
+        records = data.get("records", [])
+        if not isinstance(records, list) or len(records) == 0:
+            return jsonify({"error": "`records` must be a non-empty list"}), 400
 
-@app.route("/predict",***REMOVED***methods=["GET",***REMOVED***"POST"])
-def***REMOVED***predict():
-***REMOVED******REMOVED******REMOVED******REMOVED***try:
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***if***REMOVED***request.method***REMOVED***==***REMOVED***"POST":
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Expect***REMOVED***JSON***REMOVED***body
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***payload***REMOVED***=***REMOVED***request.get_json(force=True)
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***else:***REMOVED******REMOVED***
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Expect***REMOVED***query***REMOVED***parameters
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***from_***REMOVED***=***REMOVED***request.args.get("from")
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***to***REMOVED***=***REMOVED***request.args.get("to")
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***distance***REMOVED***=***REMOVED***request.args.get("distance")
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***flightType***REMOVED***=***REMOVED***request.args.get("flightType")
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***agency***REMOVED***=***REMOVED***request.args.get("agency")
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***time***REMOVED***=***REMOVED***request.args.get("time")
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***year***REMOVED***=***REMOVED***request.args.get("year")
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***month***REMOVED***=***REMOVED***request.args.get("month")
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***day***REMOVED***=***REMOVED***request.args.get("day")
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***day_of_week***REMOVED***=***REMOVED***request.args.get("day_of_week")
+        frames = [parse_and_engineer(r) for r in records]
+        X = pd.concat(frames, ignore_index=True)
+        preds = model.predict(X).tolist()
+        preds = [round(float(p), 2) for p in preds]
+        return jsonify({"predicted_prices": preds})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***if***REMOVED***not***REMOVED***all([from_,***REMOVED***to,***REMOVED***distance,***REMOVED***flightType,***REMOVED***agency,***REMOVED***time,***REMOVED***year,***REMOVED***month,***REMOVED***day,***REMOVED***day_of_week]):
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***return***REMOVED***jsonify({"error":***REMOVED***"Missing***REMOVED***one***REMOVED***or***REMOVED***more***REMOVED***required***REMOVED***query***REMOVED***parameters."}),***REMOVED***400
-
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***payload***REMOVED***=***REMOVED***{
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"from":***REMOVED***from_,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"to":***REMOVED***to,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"flightType":***REMOVED***flightType,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"agency":***REMOVED***agency,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"time":***REMOVED***time,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"distance":***REMOVED***distance,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"year":***REMOVED***year,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"month":***REMOVED***month,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"day":***REMOVED***day,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"day_of_week":***REMOVED***day_of_week
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***}
-
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Process***REMOVED***input
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***X***REMOVED***=***REMOVED***parse_and_engineer(payload)
-
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***feature_order***REMOVED***=***REMOVED***REQUIRED_FIELDS
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***X***REMOVED***=***REMOVED***X[feature_order]
-
-
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***pred***REMOVED***=***REMOVED***float(model.predict(X)[0])
-
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***return***REMOVED***jsonify({"predicted_price":***REMOVED***round(pred,***REMOVED***2)})
-
-***REMOVED******REMOVED******REMOVED******REMOVED***except***REMOVED***Exception***REMOVED***as***REMOVED***e:
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***return***REMOVED***jsonify({"error":***REMOVED***str(e)}),***REMOVED***400
-
-
-@app.route("/predict-batch",***REMOVED***methods=["POST"])
-def***REMOVED***predict_batch():
-***REMOVED******REMOVED***
-***REMOVED******REMOVED******REMOVED******REMOVED***try:
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***data***REMOVED***=***REMOVED***request.get_json(force=True)
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***records***REMOVED***=***REMOVED***data.get("records",***REMOVED***[])
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***if***REMOVED***not***REMOVED***isinstance(records,***REMOVED***list)***REMOVED***or***REMOVED***len(records)***REMOVED***==***REMOVED***0:
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***return***REMOVED***jsonify({"error":***REMOVED***"`records`***REMOVED***must***REMOVED***be***REMOVED***a***REMOVED***non-empty***REMOVED***list"}),***REMOVED***400
-
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***frames***REMOVED***=***REMOVED***[parse_and_engineer(r)***REMOVED***for***REMOVED***r***REMOVED***in***REMOVED***records]
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***X***REMOVED***=***REMOVED***pd.concat(frames,***REMOVED***ignore_index=True)
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***preds***REMOVED***=***REMOVED***model.predict(X).tolist()
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***preds***REMOVED***=***REMOVED***[round(float(p),***REMOVED***2)***REMOVED***for***REMOVED***p***REMOVED***in***REMOVED***preds]
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***return***REMOVED***jsonify({"predicted_prices":***REMOVED***preds})
-***REMOVED******REMOVED******REMOVED******REMOVED***except***REMOVED***Exception***REMOVED***as***REMOVED***e:
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***return***REMOVED***jsonify({"error":***REMOVED***str(e)}),***REMOVED***400
-
-
-if***REMOVED***__name__***REMOVED***==***REMOVED***"__main__":
-***REMOVED******REMOVED******REMOVED******REMOVED***app.run(host="0.0.0.0",***REMOVED***port=5000,***REMOVED***debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)

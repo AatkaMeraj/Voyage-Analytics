@@ -1,12 +1,12 @@
-#***REMOVED***Byte-compiled***REMOVED***/***REMOVED***optimized***REMOVED***/***REMOVED***DLL***REMOVED***files
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
 *$py.class
 
-#***REMOVED***C***REMOVED***extensions
+# C extensions
 *.so
 
-#***REMOVED***Distribution***REMOVED***/***REMOVED***packaging
+# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -26,17 +26,15 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-#***REMOVED***PyInstaller
-#***REMOVED******REMOVED***Usually***REMOVED***these***REMOVED***files***REMOVED***are***REMOVED***written***REMOVED***by***REMOVED***a***REMOVED***python***REMOVED***script***REMOVED***from***REMOVED***a***REMOVED***template
-#***REMOVED******REMOVED***before***REMOVED***PyInstaller***REMOVED***builds***REMOVED***the***REMOVED***exe,***REMOVED***so***REMOVED***as***REMOVED***to***REMOVED***inject***REMOVED***date/other***REMOVED***infos***REMOVED***into***REMOVED***it.
+# PyInstaller
 *.manifest
 *.spec
 
-#***REMOVED***Installer***REMOVED***logs
+# Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
 
-#***REMOVED***Unit***REMOVED***test***REMOVED***/***REMOVED***coverage***REMOVED***reports
+# Unit test / coverage reports
 htmlcov/
 .tox/
 .nox/
@@ -51,90 +49,71 @@ coverage.xml
 .pytest_cache/
 cover/
 
-#***REMOVED***Translations
+# Translations
 *.mo
 *.pot
 
-#***REMOVED***Django***REMOVED***stuff:
+# Django stuff:
 *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
-#***REMOVED***Flask***REMOVED***stuff:
+# Flask stuff:
 instance/
 .webassets-cache
 
-#***REMOVED***Scrapy***REMOVED***stuff:
+# Scrapy stuff:
 .scrapy
 
-#***REMOVED***Sphinx***REMOVED***documentation
+# Sphinx documentation
 docs/_build/
 
-#***REMOVED***PyBuilder
+# PyBuilder
 .pybuilder/
 target/
 
-#***REMOVED***Jupyter***REMOVED***Notebook
+# Jupyter Notebook
 .ipynb_checkpoints
 
-#***REMOVED***IPython
+# IPython
 profile_default/
 ipython_config.py
 
-#***REMOVED***pyenv
-#***REMOVED******REMOVED******REMOVED***For***REMOVED***a***REMOVED***library***REMOVED***or***REMOVED***package,***REMOVED***you***REMOVED***might***REMOVED***want***REMOVED***to***REMOVED***ignore***REMOVED***these***REMOVED***files***REMOVED***since***REMOVED***the***REMOVED***code***REMOVED***is
-#***REMOVED******REMOVED******REMOVED***intended***REMOVED***to***REMOVED***run***REMOVED***in***REMOVED***multiple***REMOVED***environments;***REMOVED***otherwise,***REMOVED***check***REMOVED***them***REMOVED***in:
-#***REMOVED***.python-version
+# pyenv
+.python-version
 
-#***REMOVED***pipenv
-#***REMOVED******REMOVED******REMOVED***According***REMOVED***to***REMOVED***pypa/pipenv#598,***REMOVED***it***REMOVED***is***REMOVED***recommended***REMOVED***to***REMOVED***include***REMOVED***Pipfile.lock***REMOVED***in***REMOVED***version***REMOVED***control.
-#***REMOVED******REMOVED******REMOVED***However,***REMOVED***in***REMOVED***case***REMOVED***of***REMOVED***collaboration,***REMOVED***if***REMOVED***having***REMOVED***platform-specific***REMOVED***dependencies***REMOVED***or***REMOVED***dependencies
-#***REMOVED******REMOVED******REMOVED***having***REMOVED***no***REMOVED***cross-platform***REMOVED***support,***REMOVED***pipenv***REMOVED***may***REMOVED***install***REMOVED***dependencies***REMOVED***that***REMOVED***don't***REMOVED***work,***REMOVED***or***REMOVED***not
-#***REMOVED******REMOVED******REMOVED***install***REMOVED***all***REMOVED***needed***REMOVED***dependencies.
-#Pipfile.lock
+# pipenv
+Pipfile.lock
 
-#***REMOVED***UV
-#***REMOVED******REMOVED******REMOVED***Similar***REMOVED***to***REMOVED***Pipfile.lock,***REMOVED***it***REMOVED***is***REMOVED***generally***REMOVED***recommended***REMOVED***to***REMOVED***include***REMOVED***uv.lock***REMOVED***in***REMOVED***version***REMOVED***control.
-#***REMOVED******REMOVED******REMOVED***This***REMOVED***is***REMOVED***especially***REMOVED***recommended***REMOVED***for***REMOVED***binary***REMOVED***packages***REMOVED***to***REMOVED***ensure***REMOVED***reproducibility,***REMOVED***and***REMOVED***is***REMOVED***more
-#***REMOVED******REMOVED******REMOVED***commonly***REMOVED***ignored***REMOVED***for***REMOVED***libraries.
-#uv.lock
+# UV
+uv.lock
 
-#***REMOVED***poetry
-#***REMOVED******REMOVED******REMOVED***Similar***REMOVED***to***REMOVED***Pipfile.lock,***REMOVED***it***REMOVED***is***REMOVED***generally***REMOVED***recommended***REMOVED***to***REMOVED***include***REMOVED***poetry.lock***REMOVED***in***REMOVED***version***REMOVED***control.
-#***REMOVED******REMOVED******REMOVED***This***REMOVED***is***REMOVED***especially***REMOVED***recommended***REMOVED***for***REMOVED***binary***REMOVED***packages***REMOVED***to***REMOVED***ensure***REMOVED***reproducibility,***REMOVED***and***REMOVED***is***REMOVED***more
-#***REMOVED******REMOVED******REMOVED***commonly***REMOVED***ignored***REMOVED***for***REMOVED***libraries.
-#***REMOVED******REMOVED******REMOVED***https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-#poetry.lock
-#poetry.toml
+# poetry
+poetry.lock
+poetry.toml
 
-#***REMOVED***pdm
-#***REMOVED******REMOVED******REMOVED***Similar***REMOVED***to***REMOVED***Pipfile.lock,***REMOVED***it***REMOVED***is***REMOVED***generally***REMOVED***recommended***REMOVED***to***REMOVED***include***REMOVED***pdm.lock***REMOVED***in***REMOVED***version***REMOVED***control.
-#***REMOVED******REMOVED******REMOVED***pdm***REMOVED***recommends***REMOVED***including***REMOVED***project-wide***REMOVED***configuration***REMOVED***in***REMOVED***pdm.toml,***REMOVED***but***REMOVED***excluding***REMOVED***.pdm-python.
-#***REMOVED******REMOVED******REMOVED***https://pdm-project.org/en/latest/usage/project/#working-with-version-control
-#pdm.lock
-#pdm.toml
+# pdm
+pdm.lock
+pdm.toml
 .pdm-python
 .pdm-build/
 
-#***REMOVED***pixi
-#***REMOVED******REMOVED******REMOVED***Similar***REMOVED***to***REMOVED***Pipfile.lock,***REMOVED***it***REMOVED***is***REMOVED***generally***REMOVED***recommended***REMOVED***to***REMOVED***include***REMOVED***pixi.lock***REMOVED***in***REMOVED***version***REMOVED***control.
-#pixi.lock
-#***REMOVED******REMOVED******REMOVED***Pixi***REMOVED***creates***REMOVED***a***REMOVED***virtual***REMOVED***environment***REMOVED***in***REMOVED***the***REMOVED***.pixi***REMOVED***directory,***REMOVED***just***REMOVED***like***REMOVED***venv***REMOVED***module***REMOVED***creates***REMOVED***one
-#***REMOVED******REMOVED******REMOVED***in***REMOVED***the***REMOVED***.venv***REMOVED***directory.***REMOVED***It***REMOVED***is***REMOVED***recommended***REMOVED***not***REMOVED***to***REMOVED***include***REMOVED***this***REMOVED***directory***REMOVED***in***REMOVED***version***REMOVED***control.
+# pixi
+pixi.lock
 .pixi
 
-#***REMOVED***PEP***REMOVED***582;***REMOVED***used***REMOVED***by***REMOVED***e.g.***REMOVED***github.com/David-OConnor/pyflow***REMOVED***and***REMOVED***github.com/pdm-project/pdm
+# PEP 582; used by e.g. pyflow and pdm
 __pypackages__/
 
-#***REMOVED***Celery***REMOVED***stuff
+# Celery stuff
 celerybeat-schedule
 celerybeat.pid
 
-#***REMOVED***SageMath***REMOVED***parsed***REMOVED***files
+# SageMath parsed files
 *.sage.py
 
-#***REMOVED***Environments
+# Environments
 .env
 .envrc
 .venv
@@ -144,67 +123,52 @@ ENV/
 env.bak/
 venv.bak/
 
-#***REMOVED***Spyder***REMOVED***project***REMOVED***settings
+# Spyder project settings
 .spyderproject
 .spyproject
 
-#***REMOVED***Rope***REMOVED***project***REMOVED***settings
+# Rope project settings
 .ropeproject
 
-#***REMOVED***mkdocs***REMOVED***documentation
+# mkdocs documentation
 /site
 
-#***REMOVED***mypy
+# mypy
 .mypy_cache/
 .dmypy.json
 dmypy.json
 
-#***REMOVED***Pyre***REMOVED***type***REMOVED***checker
+# Pyre type checker
 .pyre/
 
-#***REMOVED***pytype***REMOVED***static***REMOVED***type***REMOVED***analyzer
+# pytype static type analyzer
 .pytype/
 
-#***REMOVED***Cython***REMOVED***debug***REMOVED***symbols
+# Cython debug symbols
 cython_debug/
 
-#***REMOVED***PyCharm
-#***REMOVED******REMOVED***JetBrains***REMOVED***specific***REMOVED***template***REMOVED***is***REMOVED***maintained***REMOVED***in***REMOVED***a***REMOVED***separate***REMOVED***JetBrains.gitignore***REMOVED***that***REMOVED***can
-#***REMOVED******REMOVED***be***REMOVED***found***REMOVED***at***REMOVED***https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#***REMOVED******REMOVED***and***REMOVED***can***REMOVED***be***REMOVED***added***REMOVED***to***REMOVED***the***REMOVED***global***REMOVED***gitignore***REMOVED***or***REMOVED***merged***REMOVED***into***REMOVED***this***REMOVED***file.***REMOVED******REMOVED***For***REMOVED***a***REMOVED***more***REMOVED***nuclear
-#***REMOVED******REMOVED***option***REMOVED***(not***REMOVED***recommended)***REMOVED***you***REMOVED***can***REMOVED***uncomment***REMOVED***the***REMOVED***following***REMOVED***to***REMOVED***ignore***REMOVED***the***REMOVED***entire***REMOVED***idea***REMOVED***folder.
-#.idea/
+# PyCharm
+.idea/
 
-#***REMOVED***Abstra
-#***REMOVED***Abstra***REMOVED***is***REMOVED***an***REMOVED***AI-powered***REMOVED***process***REMOVED***automation***REMOVED***framework.
-#***REMOVED***Ignore***REMOVED***directories***REMOVED***containing***REMOVED***user***REMOVED***credentials,***REMOVED***local***REMOVED***state,***REMOVED***and***REMOVED***settings.
-#***REMOVED***Learn***REMOVED***more***REMOVED***at***REMOVED***https://abstra.io/docs
+# Abstra
 .abstra/
 
-#***REMOVED***Visual***REMOVED***Studio***REMOVED***Code
-#***REMOVED******REMOVED***Visual***REMOVED***Studio***REMOVED***Code***REMOVED***specific***REMOVED***template***REMOVED***is***REMOVED***maintained***REMOVED***in***REMOVED***a***REMOVED***separate***REMOVED***VisualStudioCode.gitignore***REMOVED***
-#***REMOVED******REMOVED***that***REMOVED***can***REMOVED***be***REMOVED***found***REMOVED***at***REMOVED***https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
-#***REMOVED******REMOVED***and***REMOVED***can***REMOVED***be***REMOVED***added***REMOVED***to***REMOVED***the***REMOVED***global***REMOVED***gitignore***REMOVED***or***REMOVED***merged***REMOVED***into***REMOVED***this***REMOVED***file.***REMOVED***However,***REMOVED***if***REMOVED***you***REMOVED***prefer,***REMOVED***
-#***REMOVED******REMOVED***you***REMOVED***could***REMOVED***uncomment***REMOVED***the***REMOVED***following***REMOVED***to***REMOVED***ignore***REMOVED***the***REMOVED***entire***REMOVED***vscode***REMOVED***folder
-#***REMOVED***.vscode/
+# Visual Studio Code
+.vscode/
 
-#***REMOVED***Ruff***REMOVED***stuff:
+# Ruff stuff
 .ruff_cache/
 
-#***REMOVED***PyPI***REMOVED***configuration***REMOVED***file
+# PyPI configuration file
 .pypirc
 
-#***REMOVED***Cursor
-#***REMOVED******REMOVED***Cursor***REMOVED***is***REMOVED***an***REMOVED***AI-powered***REMOVED***code***REMOVED***editor.***REMOVED***`.cursorignore`***REMOVED***specifies***REMOVED***files/directories***REMOVED***to
-#***REMOVED******REMOVED***exclude***REMOVED***from***REMOVED***AI***REMOVED***features***REMOVED***like***REMOVED***autocomplete***REMOVED***and***REMOVED***code***REMOVED***analysis.***REMOVED***Recommended***REMOVED***for***REMOVED***sensitive***REMOVED***data
-#***REMOVED******REMOVED***refer***REMOVED***to***REMOVED***https://docs.cursor.com/context/ignore-files
+# Cursor
 .cursorignore
 .cursorindexingignore
 
-#***REMOVED***Marimo
+# Marimo
 marimo/_static/
 marimo/_lsp/
 __marimo__/
-
 
 Voyage_Anamytics.egg-info/

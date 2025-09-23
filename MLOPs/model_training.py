@@ -1,106 +1,105 @@
-import***REMOVED***os
-import***REMOVED***warnings
-import***REMOVED***pandas***REMOVED***as***REMOVED***pd
-import***REMOVED***numpy***REMOVED***as***REMOVED***np
-from***REMOVED***sklearn.model_selection***REMOVED***import***REMOVED***train_test_split
-from***REMOVED***sklearn.ensemble***REMOVED***import***REMOVED***RandomForestRegressor,***REMOVED***GradientBoostingRegressor
-from***REMOVED***sklearn.linear_model***REMOVED***import***REMOVED***LinearRegression
-import***REMOVED***xgboost***REMOVED***as***REMOVED***xgb
-from***REMOVED***sklearn.pipeline***REMOVED***import***REMOVED***Pipeline
-from***REMOVED***sklearn.compose***REMOVED***import***REMOVED***ColumnTransformer
-from***REMOVED***sklearn.preprocessing***REMOVED***import***REMOVED***OneHotEncoder
-import***REMOVED***joblib
-import***REMOVED***logging
+import os
+import warnings
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.linear_model import LinearRegression
+import xgboost as xgb
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
+import joblib
+import logging
 
-#***REMOVED***Logging
+# Logging
 logging.basicConfig(level=logging.INFO)
-logger***REMOVED***=***REMOVED***logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 warnings.filterwarnings("ignore")
 np.random.seed(42)
 
-#***REMOVED***Paths
-DATA_PATH***REMOVED***=***REMOVED***"../data/flights.csv"
-MODEL_DIR***REMOVED***=***REMOVED***"../models"
+# Paths
+DATA_PATH = "../data/flights.csv"
+MODEL_DIR = "../models"
 
-def***REMOVED***flight_price_prediction_model():
-***REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Load***REMOVED***data
-***REMOVED******REMOVED******REMOVED******REMOVED***data***REMOVED***=***REMOVED***pd.read_csv(DATA_PATH)
+def flight_price_prediction_model():
+    # Load data
+    data = pd.read_csv(DATA_PATH)
 
-***REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Feature***REMOVED***engineering
-***REMOVED******REMOVED******REMOVED******REMOVED***data['date']***REMOVED***=***REMOVED***pd.to_datetime(data['date'])
-***REMOVED******REMOVED******REMOVED******REMOVED***data['year']***REMOVED***=***REMOVED***data['date'].dt.year
-***REMOVED******REMOVED******REMOVED******REMOVED***data['month']***REMOVED***=***REMOVED***data['date'].dt.month
-***REMOVED******REMOVED******REMOVED******REMOVED***data['day']***REMOVED***=***REMOVED***data['date'].dt.day
-***REMOVED******REMOVED******REMOVED******REMOVED***data['day_of_week']***REMOVED***=***REMOVED***data['date'].dt.dayofweek
-***REMOVED******REMOVED******REMOVED******REMOVED***data['is_weekend']***REMOVED***=***REMOVED***data['day_of_week'].isin([5,6]).astype(int)
-***REMOVED******REMOVED******REMOVED******REMOVED***data***REMOVED***=***REMOVED***data.drop(columns=['date',***REMOVED***'travelCode',***REMOVED***'userCode'],***REMOVED***errors='ignore')
+    # Feature engineering
+    data['date'] = pd.to_datetime(data['date'])
+    data['year'] = data['date'].dt.year
+    data['month'] = data['date'].dt.month
+    data['day'] = data['date'].dt.day
+    data['day_of_week'] = data['date'].dt.dayofweek
+    data['is_weekend'] = data['day_of_week'].isin([5,6]).astype(int)
+    data = data.drop(columns=['date', 'travelCode', 'userCode'], errors='ignore')
 
-***REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Separate***REMOVED***features/target
-***REMOVED******REMOVED******REMOVED******REMOVED***X***REMOVED***=***REMOVED***data.drop(columns=['price'])
-***REMOVED******REMOVED******REMOVED******REMOVED***y***REMOVED***=***REMOVED***data['price']
+    # Separate features/target
+    X = data.drop(columns=['price'])
+    y = data['price']
 
-***REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Categorical***REMOVED***and***REMOVED***numerical***REMOVED***columns
-***REMOVED******REMOVED******REMOVED******REMOVED***categorical_cols***REMOVED***=***REMOVED***['from',***REMOVED***'to',***REMOVED***'flightType',***REMOVED***'agency']
-***REMOVED******REMOVED******REMOVED******REMOVED***numeric_cols***REMOVED***=***REMOVED***['time',***REMOVED***'distance',***REMOVED***'day',***REMOVED***'month',***REMOVED***'year',***REMOVED***'day_of_week']
+    # Categorical and numerical columns
+    categorical_cols = ['from', 'to', 'flightType', 'agency']
+    numeric_cols = ['time', 'distance', 'day', 'month', 'year', 'day_of_week']
 
-***REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Preprocessing***REMOVED***pipelines
-***REMOVED******REMOVED******REMOVED******REMOVED***preprocessor***REMOVED***=***REMOVED***ColumnTransformer(
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***transformers=[
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***('cat',***REMOVED***OneHotEncoder(handle_unknown='ignore'),***REMOVED***categorical_cols),
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***('num',***REMOVED***'passthrough',***REMOVED***numeric_cols)
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***]
-***REMOVED******REMOVED******REMOVED******REMOVED***)
+    # Preprocessing pipelines
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_cols),
+            ('num', 'passthrough', numeric_cols)
+        ]
+    )
 
-***REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Define***REMOVED***all***REMOVED***models
-***REMOVED******REMOVED******REMOVED******REMOVED***models***REMOVED***=***REMOVED***{
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"RandomForest":***REMOVED***RandomForestRegressor(
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***n_estimators=200,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***max_depth=15,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***min_samples_split=10,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***random_state=42,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***n_jobs=-1
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***),
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"GradientBoost":***REMOVED***GradientBoostingRegressor(
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***n_estimators=200,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***max_depth=5,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***random_state=42
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***),
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"XGBoost":***REMOVED***xgb.XGBRegressor(
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***n_estimators=200,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***max_depth=5,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***random_state=42,
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***verbosity=0
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***),
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***"LinearRegression":***REMOVED***LinearRegression()
-***REMOVED******REMOVED******REMOVED******REMOVED***}
+    # Define all models
+    models = {
+        "RandomForest": RandomForestRegressor(
+            n_estimators=200,
+            max_depth=15,
+            min_samples_split=10,
+            random_state=42,
+            n_jobs=-1
+        ),
+        "GradientBoost": GradientBoostingRegressor(
+            n_estimators=200,
+            max_depth=5,
+            random_state=42
+        ),
+        "XGBoost": xgb.XGBRegressor(
+            n_estimators=200,
+            max_depth=5,
+            random_state=42,
+            verbosity=0
+        ),
+        "LinearRegression": LinearRegression()
+    }
 
-***REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Train/test***REMOVED***split
-***REMOVED******REMOVED******REMOVED******REMOVED***X_train,***REMOVED***X_test,***REMOVED***y_train,***REMOVED***y_test***REMOVED***=***REMOVED***train_test_split(
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***X,***REMOVED***y,***REMOVED***test_size=0.2,***REMOVED***random_state=42
-***REMOVED******REMOVED******REMOVED******REMOVED***)
+    # Train/test split
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
 
-***REMOVED******REMOVED******REMOVED******REMOVED***trained_models***REMOVED***=***REMOVED***{}
+    trained_models = {}
 
-***REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Train,***REMOVED***save,***REMOVED***and***REMOVED***log***REMOVED***each***REMOVED***model
-***REMOVED******REMOVED******REMOVED******REMOVED***for***REMOVED***name,***REMOVED***estimator***REMOVED***in***REMOVED***models.items():
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***pipeline***REMOVED***=***REMOVED***Pipeline(steps=[
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***('preprocessor',***REMOVED***preprocessor),
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***('regressor',***REMOVED***estimator)
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***])
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***pipeline.fit(X_train,***REMOVED***y_train)
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***logger.info(f"{name}***REMOVED***model***REMOVED***trained***REMOVED***on***REMOVED***{X_train.shape[0]}***REMOVED***rows.")
+    # Train, save, and log each model
+    for name, estimator in models.items():
+        pipeline = Pipeline(steps=[
+            ('preprocessor', preprocessor),
+            ('regressor', estimator)
+        ])
+        pipeline.fit(X_train, y_train)
+        logger.info(f"{name} model trained on {X_train.shape[0]} rows.")
 
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***#***REMOVED***Save***REMOVED***model
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***os.makedirs(MODEL_DIR,***REMOVED***exist_ok=True)
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***model_path***REMOVED***=***REMOVED***os.path.join(MODEL_DIR,***REMOVED***f"{name}_flight_model.pkl")
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***joblib.dump(pipeline,***REMOVED***model_path)
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***logger.info(f"{name}***REMOVED***model***REMOVED***saved***REMOVED***at***REMOVED***{model_path}")
+        # Save model
+        os.makedirs(MODEL_DIR, exist_ok=True)
+        model_path = os.path.join(MODEL_DIR, f"{name}_flight_model.pkl")
+        joblib.dump(pipeline, model_path)
+        logger.info(f"{name} model saved at {model_path}")
 
-***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***trained_models[name]***REMOVED***=***REMOVED***(pipeline,***REMOVED***X_test,***REMOVED***y_test)
+        trained_models[name] = (pipeline, X_test, y_test)
 
-***REMOVED******REMOVED******REMOVED******REMOVED***return***REMOVED***trained_models
+    return trained_models
 
-if***REMOVED***__name__***REMOVED***==***REMOVED***"__main__":
-***REMOVED******REMOVED******REMOVED******REMOVED***flight_price_prediction_model()
+if __name__ == "__main__":
+    flight_price_prediction_model()

@@ -1,18 +1,14 @@
-#***REMOVED***Voyage-Analytics
+# Voyage-Analytics
 
-#***REMOVED***How***REMOVED***to***REMOVED***run
+# How to run
 
 ```terminal
-conda***REMOVED***create***REMOVED***-n***REMOVED***chest***REMOVED***python=3.9***REMOVED***-y
+conda create -n chest python=3.9 -y
+```
+```terminal
+conda activate chest
 ```
 
 ```terminal
-conda***REMOVED***activate***REMOVED***chest
+pip install -r requirements.txt
 ```
-
-```terminal
-pip***REMOVED***install***REMOVED***-r***REMOVED***requirements.txt
-```
-
-
-***REMOVED***
