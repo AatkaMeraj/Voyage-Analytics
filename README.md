@@ -3,6 +3,10 @@
 # How to run
 
 ```terminal
+git clone https://github.com/AatkaMeraj/Voyage-Analytics.git
+```
+
+```terminal
 conda create -n chest python=3.9 -y
 ```
 
